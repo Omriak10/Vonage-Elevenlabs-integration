@@ -1,0 +1,25 @@
+project:
+    name: ElevenLabsVonageIntegration
+instance:
+    name: production
+    runtime: nodejs22
+    region: aws.euw1
+    application-id: ${VONAGE_APPLICATION_ID}
+    entrypoint: [node, server.js]
+    capabilities:
+        - voice
+    environment:
+        - name: VONAGE_API_KEY
+          value: "${VONAGE_API_KEY}"
+        - name: VONAGE_API_SECRET
+          value: "${VONAGE_API_SECRET}"
+debug:
+    name: debug
+    application-id: ${VONAGE_APPLICATION_ID}
+    entrypoint: [nodemon, --inspect, server.js]
+    environment:
+        - name: VONAGE_API_KEY
+          value: "${VONAGE_API_KEY}"
+        - name: VONAGE_API_SECRET
+          value: "${VONAGE_API_SECRET}"
+    preserve-data: false

@@ -1,0 +1,362 @@
+{
+  "info": {
+    "name": "ElevenLabs-Vonage Integration",
+    "_postman_id": "elevenlabs-vonage-integration",
+    "description": "Complete API collection for the ElevenLabs + Vonage Voice Integration.\n\n## Setup\n1. Update the `baseUrl` variable to your VCR deployment URL\n2. Configure Vonage credentials first\n3. Configure client with your ElevenLabs API key\n4. Make calls!\n\n## Variables\n- `baseUrl`: Your VCR deployment URL\n- `clientId`: Your client identifier\n- `toNumber`: Test destination number\n- `fromNumber`: Your Vonage number",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://your-vcr-url.euw1.runtime.vonage.cloud",
+      "type": "string"
+    },
+    {
+      "key": "clientId",
+      "value": "my-client",
+      "type": "string"
+    },
+    {
+      "key": "toNumber",
+      "value": "447700900000",
+      "type": "string"
+    },
+    {
+      "key": "fromNumber",
+      "value": "447700900001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Check overall system health and configuration status."
+          }
+        },
+        {
+          "name": "VCR Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/_/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["_", "health"]
+            },
+            "description": "VCR internal health check endpoint."
+          }
+        },
+        {
+          "name": "Vonage Config Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vonage/config/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vonage", "config", "status"]
+            },
+            "description": "Check if Vonage credentials are configured."
+          }
+        },
+        {
+          "name": "List Active Calls",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/calls/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "calls", "active"]
+            },
+            "description": "List all currently active calls."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Vonage Configuration",
+      "item": [
+        {
+          "name": "Configure Vonage Credentials",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "appId",
+                  "value": "YOUR_VONAGE_APPLICATION_ID",
+                  "description": "Vonage Application ID",
+                  "type": "text"
+                },
+                {
+                  "key": "privateKey",
+                  "description": "Private key file (.key)",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "apiKey",
+                  "value": "YOUR_API_KEY",
+                  "description": "(Optional) Vonage API Key",
+                  "type": "text"
+                },
+                {
+                  "key": "apiSecret",
+                  "value": "YOUR_API_SECRET",
+                  "description": "(Optional) Vonage API Secret",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vonage/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vonage", "config"]
+            },
+            "description": "Configure Vonage credentials. Upload your private key file.\n\n**Required:**\n- appId: Your Vonage Application ID\n- privateKey: Your private.key file\n\n**Optional:**\n- apiKey: Vonage API Key (for number lookup)\n- apiSecret: Vonage API Secret"
+          }
+        },
+        {
+          "name": "Clear Vonage Configuration",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vonage/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vonage", "config"]
+            },
+            "description": "Clear the Vonage configuration (logout)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Client Configuration",
+      "item": [
+        {
+          "name": "Configure Client (ElevenLabs)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"elevenLabsApiKey\": \"YOUR_ELEVENLABS_API_KEY\",\n  \"voiceId\": \"rachel\",\n  \"model\": \"eleven_flash_v2_5\",\n  \"stability\": 0.5,\n  \"similarityBoost\": 0.75,\n  \"style\": 0,\n  \"useSpeakerBoost\": true,\n  \"bargeIn\": false,\n  \"webhooks\": {\n    \"onCallStart\": \"https://your-server.com/webhooks/call-start\",\n    \"onCallEnd\": \"https://your-server.com/webhooks/call-end\",\n    \"onSpeech\": \"https://your-server.com/webhooks/speech\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/client/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "client", "config"]
+            },
+            "description": "Configure a client's ElevenLabs settings.\n\n**Required:**\n- clientId: Unique identifier\n- elevenLabsApiKey: Your ElevenLabs API key\n\n**Optional:**\n- voiceId: Voice alias (e.g., 'rachel') or full ID\n- model: ElevenLabs model\n- stability, similarityBoost, style: Voice tuning\n- webhooks: Your webhook endpoints"
+          }
+        },
+        {
+          "name": "Get Client Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/client/config/{{clientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "client", "config", "{{clientId}}"]
+            },
+            "description": "Get the current configuration for a client (API key is masked)."
+          }
+        },
+        {
+          "name": "Delete Client Configuration",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/client/config/{{clientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "client", "config", "{{clientId}}"]
+            },
+            "description": "Remove a client's configuration."
+          }
+        },
+        {
+          "name": "List Available Voices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/voices",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "voices"]
+            },
+            "description": "List all available ElevenLabs voice presets with aliases."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Text-to-Speech",
+      "item": [
+        {
+          "name": "Generate TTS Audio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"text\": \"Hello! This is a test of the ElevenLabs text to speech integration with Vonage.\",\n  \"voiceId\": \"rachel\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tts/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tts", "generate"]
+            },
+            "description": "Generate speech audio from text.\n\nReturns a URL to the generated MP3 file (expires after 5 minutes)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Voice Calls",
+      "item": [
+        {
+          "name": "Make Outbound Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"to\": \"{{toNumber}}\",\n  \"from\": \"{{fromNumber}}\",\n  \"text\": \"Hello! This is a test call using ElevenLabs text to speech through the Vonage Voice API. How can I help you today?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/call/outbound",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "call", "outbound"]
+            },
+            "description": "Initiate an outbound call with ElevenLabs TTS.\n\n**Required:**\n- clientId: Your client identifier\n- to: Destination number (E.164)\n- from: Your Vonage number\n\n**Optional:**\n- text: Initial message to speak\n- ncco: Additional NCCO actions"
+          }
+        },
+        {
+          "name": "Make Call with Custom NCCO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"to\": \"{{toNumber}}\",\n  \"from\": \"{{fromNumber}}\",\n  \"text\": \"Welcome! Press 1 for sales, or 2 for support.\",\n  \"ncco\": [\n    {\n      \"action\": \"input\",\n      \"type\": [\"dtmf\"],\n      \"eventUrl\": [\"https://your-server.com/dtmf-handler\"],\n      \"eventMethod\": \"POST\",\n      \"dtmf\": {\n        \"maxDigits\": 1,\n        \"timeOut\": 10\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/call/outbound",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "call", "outbound"]
+            },
+            "description": "Make a call with additional NCCO actions appended after the initial speech."
+          }
+        },
+        {
+          "name": "Speak to Active Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Thank you for waiting. I'll connect you now.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/call/CALL_ID_HERE/speak",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "call", "CALL_ID_HERE", "speak"]
+            },
+            "description": "Send TTS to an active call.\n\nReplace CALL_ID_HERE with the actual callId from the outbound call response."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. NCCO Builder",
+      "item": [
+        {
+          "name": "Build NCCO with ElevenLabs",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"actions\": [\n    {\n      \"type\": \"speak\",\n      \"text\": \"Welcome to our customer service line.\"\n    },\n    {\n      \"type\": \"speak\",\n      \"text\": \"Please tell me how I can help you today.\"\n    },\n    {\n      \"type\": \"input\",\n      \"inputType\": [\"speech\"],\n      \"speech\": {\n        \"language\": \"en-US\",\n        \"endOnSilence\": 2,\n        \"maxDuration\": 30\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ncco/build",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ncco", "build"]
+            },
+            "description": "Build an NCCO array with ElevenLabs speech actions.\n\n**Supported action types:**\n- speak: ElevenLabs TTS\n- input: Speech/DTMF input\n- connect: Connect to endpoint\n- notify: Send webhook\n- record: Record audio"
+          }
+        },
+        {
+          "name": "Build Complex IVR NCCO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientId\": \"{{clientId}}\",\n  \"actions\": [\n    {\n      \"type\": \"speak\",\n      \"text\": \"Thank you for calling Acme Corporation.\"\n    },\n    {\n      \"type\": \"speak\",\n      \"text\": \"For sales, press 1. For support, press 2. To speak to an operator, press 0.\"\n    },\n    {\n      \"type\": \"input\",\n      \"inputType\": [\"dtmf\"],\n      \"eventUrl\": [\"https://your-server.com/ivr-handler\"]\n    },\n    {\n      \"type\": \"speak\",\n      \"text\": \"We didn't receive your selection. Goodbye.\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ncco/build",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ncco", "build"]
+            },
+            "description": "Build a more complex IVR flow with multiple prompts and DTMF input."
+          }
+        }
+      ]
+    }
+  ]
+}
